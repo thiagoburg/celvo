@@ -47,9 +47,10 @@ Text transcription
 ## Requirements
 
 - Linux operating system
-- Python 3.10+
 - Microphone or system audio source
-- Internet connection only for initial installation
+- Internet connection for the initial installation
+
+The installer automatically installs required system dependencies, including Python.
 
 ## Installation
 

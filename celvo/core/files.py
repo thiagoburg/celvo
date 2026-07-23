@@ -19,8 +19,7 @@ def get_next_id():
 
     sources = [
         AUDIO_DIR.glob("recording_*.wav"),
-        OUTPUT_DIR.glob("clean_text_*.txt"),
-        OUTPUT_DIR.glob("summary_*.txt"),
+        OUTPUT_DIR.glob("recording_*.txt"),
     ]
 
     for files in sources:
@@ -50,8 +49,5 @@ def get_latest_audio():
     )
 
 
-def get_output_files(number):
-    clean = OUTPUT_DIR / f"clean_text_{number:03d}.txt"
-    summary = OUTPUT_DIR / f"summary_{number:03d}.txt"
-
-    return clean, summary
+def get_output_file(number):
+    return OUTPUT_DIR / f"recording_{number:03d}_raw.txt"

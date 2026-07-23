@@ -12,13 +12,14 @@ def process_latest():
     print(f"🎧 Processing: {audio.name}")
 
     print("🧠 Loading Whisper large-v3...")
+
     print("📝 Transcribing audio...")
 
     result = transcribe_audio(audio)
 
     print("")
     print(f"Language: {result['language']}")
-    print(f"Saved:")
+    print("Saved:")
     print(result["file"])
 
     return result["file"]

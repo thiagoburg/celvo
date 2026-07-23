@@ -1,15 +1,26 @@
 # Python
 __pycache__/
-*.py[cod]
-*.egg-info/
+*.pyc
 
 # Virtual environments
-.venv/
 venv/
+.env
 
-# Local data
-data/
-*.log
+# Audio recordings
+data/audio/*.wav
 
-# OS
-.DS_Store
+# Generated transcriptions
+data/output/*.txt
+
+# Whisper model
+models/*.bin
+
+# whisper.cpp external dependency
+whisper.cpp/
+
+# Build files
+build/
+
+# IDE
+.vscode/
+.idea/

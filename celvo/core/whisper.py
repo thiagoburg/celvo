@@ -1,35 +1,48 @@
 from pathlib import Path
+import subprocess
 
-from faster_whisper import WhisperModel
-
-from .config import WHISPER_MODEL, OUTPUT_DIR
+from .config import (
+    WHISPER_CLI,
+    WHISPER_MODEL,
+    WHISPER_LANGUAGE,
+    OUTPUT_DIR,
+)
 
 
 def transcribe_audio(audio_file: Path):
-    model = WhisperModel(
+
+    output_file = OUTPUT_DIR / audio_file.stem
+
+    command = [
+        WHISPER_CLI,
+        "-m",
         WHISPER_MODEL,
-        device="cpu",
-        compute_type="int8",
-    )
-
-    segments, info = model.transcribe(
+        "-f",
         str(audio_file),
+        "-l",
+        WHISPER_LANGUAGE,
+        "-otxt",
+        "-of",
+        str(output_file),
+    ]
+
+    subprocess.run(
+        command,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
     )
 
-    text = " ".join(
-        segment.text.strip()
-        for segment in segments
+    text_file = Path(
+        str(output_file) + ".txt"
     )
 
-    output = OUTPUT_DIR / f"{audio_file.stem}_raw.txt"
-
-    output.write_text(
-        text,
-        encoding="utf-8",
+    text = text_file.read_text(
+        encoding="utf-8"
     )
 
     return {
-        "language": info.language,
+        "language": WHISPER_LANGUAGE,
         "text": text,
-        "file": output,
+        "file": text_file,
     }

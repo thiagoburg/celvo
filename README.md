@@ -1,5 +1,11 @@
 # Celvo
 
+![Python](https://img.shields.io/badge/python-3.x-blue)
+![Platform](https://img.shields.io/badge/platform-Linux-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![CI](https://github.com/thiagoburg/celvo/actions/workflows/python.yml/badge.svg)
+
+
 Private offline speech transcription tool.
 
 Celvo records audio and converts it into accurate text using local AI models.

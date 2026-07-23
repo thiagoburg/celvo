@@ -144,6 +144,10 @@ pip install -r "$PROJECT_DIR/requirements.txt"
 
 
 echo
+echo "Installing Celvo package..."
+
+$VENV_DIR/bin/pip install .
+
 echo "Installing whisper.cpp..."
 
 

@@ -1,51 +1,117 @@
 # Celvo
 
-Local offline audio recorder and transcription tool.
+Private offline speech transcription tool.
 
-## Philosophy
+Celvo records audio and converts it into accurate text using local AI models.
+All processing happens on the user's machine, without cloud services or external accounts.
 
-Celvo focuses on:
+## Overview
 
-- Maximum transcription quality
+Most transcription services require uploading audio to external servers.
+
+Celvo provides a local alternative focused on:
+
 - Privacy
-- Simplicity
-- Portability
+- Transcription quality
+- Simple workflow
+- No dependency on cloud APIs
 
-No cloud.
-No accounts.
-No AI summaries.
+## Features
 
-## Workflow
+- Local audio recording
+- Offline transcription
+- Whisper large-v3 model support
+- Linux native workflow
+- No external API keys required
+- Open source components
 
-Record:
-
-record
-
-Process:
-
-process
-
-Flow:
+## How it works
 
 Audio recording
-       |
-       v
+        |
+        v
+Audio processing
+        |
+        v
 Whisper large-v3
-       |
-       v
-Text file
+        |
+        v
+Text transcription
 
-## Engine
+## Installation
 
-Powered by:
+Clone the repository:
 
+    git clone https://github.com/thiagoburg/celvo.git
+    cd celvo
+
+Run the installer:
+
+    ./install.sh
+
+The installer will:
+
+- Install required dependencies
+- Build whisper.cpp
+- Download the transcription model
+- Configure the command line interface
+
+## Usage
+
+Record audio:
+
+    celvo record
+
+Process the recording:
+
+    celvo process
+
+## Example
+
+Input:
+
+    recording_001.wav
+
+Output:
+
+    recording_001.txt
+
+## Technology
+
+Celvo is built using:
+
+- Python
+- C++
 - whisper.cpp
 - Whisper large-v3
-- GGUF quantized model
+- Linux audio tools
 
-## Requirements
+## Project Structure
 
-- Linux
-- C++ compiler
-- CMake
-- Whisper model
+    celvo/
+    ├── core/
+    │   ├── recorder.py
+    │   ├── processor.py
+    │   ├── whisper.py
+    │   └── audio.py
+    │
+    ├── models/
+    ├── data/
+    └── install.sh
+
+## Roadmap
+
+Possible future improvements:
+
+- Real-time transcription
+- Desktop application
+- Improved audio processing
+- Automatic language detection
+
+## About
+
+Celvo is a software project focused on building practical offline AI applications using open source technologies.
+
+Author:
+
+Thiago Burg

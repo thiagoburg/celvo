@@ -1,6 +1,7 @@
 import sys
 
 from .core.recorder import record_audio
+from .core.processor import process_latest
 
 
 DEFAULT_RECORD_TIME = 10
@@ -17,7 +18,7 @@ def main():
         record_audio(DEFAULT_RECORD_TIME)
 
     elif command == "process":
-        print("Process not implemented yet")
+        process_latest()
 
     else:
         print(f"Unknown command: {command}")

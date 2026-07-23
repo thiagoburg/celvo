@@ -76,6 +76,40 @@ Output:
 
     recording_001.txt
 
+## Architecture
+
+Celvo uses a local processing pipeline designed around privacy and simplicity.
+
+The workflow is:
+
+    Audio sources
+        |
+        +----------------+
+        |                |
+        v                v
+    Microphone      System audio
+        |                |
+        +----------------+
+                 |
+                 v
+          Audio recording
+                 |
+                 v
+             WAV file
+                 |
+                 v
+           whisper.cpp
+                 |
+                 v
+      Whisper large-v3 model
+                 |
+                 v
+        Text transcription
+
+
+The entire process runs locally on the user's machine.
+Audio files are not uploaded to external services.
+
 ## Technology
 
 Celvo is built using:

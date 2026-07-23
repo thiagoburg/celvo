@@ -44,6 +44,13 @@ Whisper large-v3
         v
 Text transcription
 
+## Requirements
+
+- Linux operating system
+- Python 3.10+
+- Microphone or system audio source
+- Internet connection only for initial installation
+
 ## Installation
 
 Clone the repository:

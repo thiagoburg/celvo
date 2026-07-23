@@ -9,11 +9,13 @@ from .system_audio import record_system_audio
 from .mixer import mix_audio
 
 
-def record_audio(duration):
+def record_audio():
     ensure_directories()
 
     filename = datetime.now().strftime("recording_%Y%m%d_%H%M%S.wav")
     output = AUDIO_DIR / filename
+
+    stop_event = threading.Event()
 
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = Path(temp)
@@ -23,18 +25,26 @@ def record_audio(duration):
 
         mic_thread = threading.Thread(
             target=record_microphone,
-            args=(mic_file, duration),
+            args=(mic_file, stop_event),
         )
 
         system_thread = threading.Thread(
             target=record_system_audio,
-            args=(system_file, duration),
+            args=(system_file, stop_event),
         )
 
-        print("Recording...")
+        print("Recording... Press Ctrl+C to stop.")
 
         mic_thread.start()
         system_thread.start()
+
+        try:
+            while True:
+                stop_event.wait(1)
+
+        except KeyboardInterrupt:
+            print("\nStopping recording...")
+            stop_event.set()
 
         mic_thread.join()
         system_thread.join()

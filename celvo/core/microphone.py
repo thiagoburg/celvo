@@ -9,15 +9,22 @@ SAMPLE_RATE = 48000
 CHANNELS = 1
 
 
-def record_microphone(output: Path, duration: int):
-    audio = sd.rec(
-        int(duration * SAMPLE_RATE),
+def record_microphone(output: Path, stop_event):
+    frames = []
+
+    def callback(indata, frames_count, time, status):
+        frames.append(indata.copy())
+
+    with sd.InputStream(
         samplerate=SAMPLE_RATE,
         channels=CHANNELS,
         dtype=np.int16,
-    )
+        callback=callback,
+    ):
+        while not stop_event.is_set():
+            stop_event.wait(0.1)
 
-    sd.wait()
+    audio = np.concatenate(frames)
 
     write(
         output,

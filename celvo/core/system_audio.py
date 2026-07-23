@@ -4,7 +4,7 @@ from pathlib import Path
 from .audio import find_system_monitor
 
 
-def record_system_audio(output: Path, duration: int):
+def record_system_audio(output: Path, stop_event):
     monitor = find_system_monitor()
 
     if not monitor:
@@ -25,9 +25,8 @@ def record_system_audio(output: Path, duration: int):
             stdout=file,
         )
 
-        try:
-            process.wait(timeout=duration)
+        while not stop_event.is_set():
+            stop_event.wait(0.1)
 
-        except subprocess.TimeoutExpired:
-            process.terminate()
-            process.wait()
+        process.terminate()
+        process.wait()

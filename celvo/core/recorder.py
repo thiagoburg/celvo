@@ -1,14 +1,12 @@
 from datetime import datetime
-
-import numpy as np
-import sounddevice as sd
-from scipy.io.wavfile import write
+from pathlib import Path
+import tempfile
+import threading
 
 from .config import AUDIO_DIR, ensure_directories
-
-
-SAMPLE_RATE = 44100
-CHANNELS = 1
+from .microphone import record_microphone
+from .system_audio import record_system_audio
+from .mixer import mix_audio
 
 
 def record_audio(duration):
@@ -17,22 +15,35 @@ def record_audio(duration):
     filename = datetime.now().strftime("recording_%Y%m%d_%H%M%S.wav")
     output = AUDIO_DIR / filename
 
-    print("Recording...")
+    with tempfile.TemporaryDirectory() as temp:
+        temp_dir = Path(temp)
 
-    audio = sd.rec(
-        int(duration * SAMPLE_RATE),
-        samplerate=SAMPLE_RATE,
-        channels=CHANNELS,
-        dtype=np.int16,
-    )
+        mic_file = temp_dir / "microphone.wav"
+        system_file = temp_dir / "system.raw"
 
-    sd.wait()
+        mic_thread = threading.Thread(
+            target=record_microphone,
+            args=(mic_file, duration),
+        )
 
-    write(
-        output,
-        SAMPLE_RATE,
-        audio,
-    )
+        system_thread = threading.Thread(
+            target=record_system_audio,
+            args=(system_file, duration),
+        )
+
+        print("Recording...")
+
+        mic_thread.start()
+        system_thread.start()
+
+        mic_thread.join()
+        system_thread.join()
+
+        mix_audio(
+            mic_file,
+            system_file,
+            output,
+        )
 
     print(f"Saved: {output}")
 

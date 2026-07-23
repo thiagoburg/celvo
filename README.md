@@ -133,8 +133,14 @@ Celvo is built using:
     │   ├── recorder.py
     │   ├── processor.py
     │   ├── whisper.py
-    │   └── audio.py
+    │   ├── microphone.py
+    │   ├── system_audio.py
+    │   ├── mixer.py
+    │   ├── files.py
+    │   └── config.py
     │
+    ├── main.py
+    ├── __main__.py
     ├── models/
     ├── data/
     └── install.sh

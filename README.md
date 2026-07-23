@@ -115,3 +115,7 @@ Celvo is a software project focused on building practical offline AI application
 Author:
 
 Thiago Burg
+
+## Demo
+
+![Celvo demo](docs/images/demo.png)

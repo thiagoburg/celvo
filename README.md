@@ -66,11 +66,11 @@ The installer will:
 
 Record audio:
 
-    celvo record
+    record
 
 Process the recording:
 
-    celvo process
+    process
 
 ## Example
 

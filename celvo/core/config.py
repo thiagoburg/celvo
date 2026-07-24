@@ -4,10 +4,10 @@ import os
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = Path.home() / "Documents" / "celvo"
 
 AUDIO_DIR = DATA_DIR / "audio"
-OUTPUT_DIR = DATA_DIR / "output"
+OUTPUT_DIR = DATA_DIR / "transcription"
 
 WHISPER_CLI = str(
     PROJECT_ROOT / "whisper.cpp" / "build" / "bin" / "whisper-cli"

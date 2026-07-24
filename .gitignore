@@ -24,3 +24,6 @@ build/
 # IDE
 .vscode/
 .idea/
+
+# Python package metadata
+*.egg-info/

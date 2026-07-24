@@ -6,42 +6,15 @@ REPO="https://github.com/thiagoburg/celvo.git"
 DIR="$HOME/.local/share/celvo"
 VERSION="1.1.2"
 
-
 echo
 echo "==> Installing Celvo v$VERSION"
 echo
 
-
 if ! command -v git >/dev/null 2>&1; then
-
     echo "==> Installing dependencies..."
-
-    if command -v apt >/dev/null 2>&1; then
-
-        sudo apt update -qq >/dev/null 2>&1
-        sudo apt install -y git >/dev/null 2>&1
-
-    elif command -v dnf >/dev/null 2>&1; then
-
-        sudo dnf install -y git >/dev/null 2>&1
-
-    elif command -v pacman >/dev/null 2>&1; then
-
-        sudo pacman -Sy --noconfirm git >/dev/null 2>&1
-
-    elif command -v zypper >/dev/null 2>&1; then
-
-        sudo zypper install -y git >/dev/null 2>&1
-
-    else
-
-        echo "Unsupported Linux distribution."
-        exit 1
-
-    fi
-
+    sudo apt update >/dev/null
+    sudo apt install -y git curl >/dev/null
 fi
-
 
 if [ ! -d "$DIR" ]; then
 

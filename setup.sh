@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$PROJECT_DIR/.venv"
 BIN_DIR="$HOME/.local/bin"
 
-INSTALLER_VERSION="1.1.0"
+INSTALLER_VERSION="1.1.1"
 
 echo "Installing Celvo v$INSTALLER_VERSION"
 echo

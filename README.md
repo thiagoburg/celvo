@@ -1,5 +1,7 @@
 # Celvo
 
+![Celvo Demo](docs/images/demo.png)
+
 Private, offline audio recording and transcription for Linux.
 
 Built on `whisper.cpp` for high-quality local transcription.
@@ -173,7 +175,7 @@ Upcoming improvements include:
 
 # Project status
 
-Current version: **v1.1.0**
+Current version: **v1.1.1**
 
 The installation process has been validated on Fedora Linux.
 

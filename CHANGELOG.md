@@ -1,3 +1,5 @@
+## v1.1.2
+
 # Changelog
 
 All notable changes to Celvo are documented here.

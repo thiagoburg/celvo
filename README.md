@@ -175,7 +175,7 @@ Upcoming improvements include:
 
 # Project status
 
-Current version: **v1.1.1**
+Current version: **v1.1.2**
 
 The installation process has been validated on Fedora Linux.
 

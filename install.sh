@@ -10,30 +10,26 @@ echo
 echo "==> Installing Celvo v$VERSION"
 echo
 
+mkdir -p "$HOME/.local/share"
+
 if [ ! -d "$DIR" ]; then
-
-    echo "==> Downloading Celvo..."
-
-    mkdir -p "$HOME/.local/share"
-
     git clone -q "$REPO" "$DIR"
-
-    echo "✓ Done"
-
 else
-
-    echo "==> Updating Celvo..."
-
     cd "$DIR"
-
     git pull -q
-
-    echo "✓ Done"
-
 fi
 
 cd "$DIR"
 
 chmod +x setup.sh
 
-./setup.sh
+./setup.sh >/dev/null
+
+echo
+echo "✓ Celvo installed successfully."
+echo
+echo "Commands:"
+echo
+echo "  record"
+echo "  process"
+echo

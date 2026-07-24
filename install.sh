@@ -18,20 +18,20 @@ if ! command -v git >/dev/null 2>&1; then
 
     if command -v apt >/dev/null 2>&1; then
 
-        sudo apt update >/dev/null
-        sudo apt install -y git >/dev/null
+        sudo apt update -qq >/dev/null 2>&1
+        sudo apt install -y git >/dev/null 2>&1
 
     elif command -v dnf >/dev/null 2>&1; then
 
-        sudo dnf install -y git >/dev/null
+        sudo dnf install -y git >/dev/null 2>&1
 
     elif command -v pacman >/dev/null 2>&1; then
 
-        sudo pacman -Sy --noconfirm git >/dev/null
+        sudo pacman -Sy --noconfirm git >/dev/null 2>&1
 
     elif command -v zypper >/dev/null 2>&1; then
 
-        sudo zypper install -y git >/dev/null
+        sudo zypper install -y git >/dev/null 2>&1
 
     else
 

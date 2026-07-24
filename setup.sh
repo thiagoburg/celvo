@@ -4,9 +4,10 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$PROJECT_DIR/.venv"
-BIN_DIR="$HOME/.local/bin"
 LOG_FILE="/tmp/celvo-install.log"
+TMP_BIN_DIR="$(mktemp -d)"
 
+trap 'rm -rf "$TMP_BIN_DIR"' EXIT
 rm -f "$LOG_FILE"
 
 run() {
@@ -107,26 +108,20 @@ if [ ! -f "$MODEL" ]; then
     run wget -O "$MODEL" https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin
 fi
 
-mkdir -p "$BIN_DIR"
-
-cat > "$BIN_DIR/record" <<EOF2
+cat > "$TMP_BIN_DIR/record" <<EOF2
 #!/usr/bin/env bash
 cd "$PROJECT_DIR"
 "$VENV_DIR/bin/python" -m celvo record
 EOF2
 
-cat > "$BIN_DIR/process" <<EOF2
+cat > "$TMP_BIN_DIR/process" <<EOF2
 #!/usr/bin/env bash
 cd "$PROJECT_DIR"
 "$VENV_DIR/bin/python" -m celvo process
 EOF2
 
-chmod +x "$BIN_DIR/record" "$BIN_DIR/process"
-
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
-    export PATH="$HOME/.local/bin:$PATH"
-fi
+run sudo install -m 755 "$TMP_BIN_DIR/record" /usr/local/bin/record
+run sudo install -m 755 "$TMP_BIN_DIR/process" /usr/local/bin/process
 
 run "$VENV_DIR/bin/python" -c "import celvo"
 

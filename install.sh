@@ -10,26 +10,35 @@ echo
 echo "==> Installing Celvo v$VERSION"
 echo
 
-mkdir -p "$HOME/.local/share"
+if ! command -v git >/dev/null 2>&1; then
+
+    echo "==> Installing dependencies..."
+
+    sudo apt update >/dev/null
+    sudo apt install -y git >/dev/null
+
+fi
+
 
 if [ ! -d "$DIR" ]; then
+
+    echo "==> Downloading Celvo..."
+
+    mkdir -p "$HOME/.local/share"
+
     git clone -q "$REPO" "$DIR"
+
+    echo "✓ Done"
+
 else
+
     cd "$DIR"
     git pull -q
 fi
+
 
 cd "$DIR"
 
 chmod +x setup.sh
 
-./setup.sh >/dev/null
-
-echo
-echo "✓ Celvo installed successfully."
-echo
-echo "Commands:"
-echo
-echo "  record"
-echo "  process"
-echo
+./setup.sh

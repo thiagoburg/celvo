@@ -2,13 +2,74 @@
 
 ![Celvo Demo](docs/images/demo.png)
 
-Private, offline audio recording and transcription for Linux.
+Private, offline audio recording and transcription tool for Linux.
 
 Built on `whisper.cpp` for high-quality local transcription.
 
-**Celvo** is a local audio recording and transcription tool focused on **privacy, simplicity, and transcription quality**.
+Celvo records audio locally and generates accurate transcriptions completely offline.
 
-It records audio on your computer and transcribes it entirely offline using **whisper.cpp** and OpenAI's Whisper models. Your recordings never leave your machine.
+Your recordings never leave your machine.
+
+---
+
+# Installation
+
+## Quick install
+
+Copy and paste this into your terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/thiagoburg/celvo/main/install.sh | bash
+```
+
+The installer automatically:
+
+✓ Detects your Linux distribution  
+✓ Installs required dependencies  
+✓ Creates the Python environment  
+✓ Builds whisper.cpp  
+✓ Downloads the Whisper model  
+✓ Creates the Celvo commands  
+
+After installation:
+
+```bash
+record
+```
+
+Record your audio, then:
+
+```bash
+process
+```
+
+Generate your transcription.
+
+---
+
+# Tested systems
+
+## Fedora Linux
+
+Tested on:
+
+- Fedora Linux
+- Python 3.14
+- whisper.cpp
+- Whisper Large-v3 quantized model
+
+Installation validated successfully.
+
+![Fedora Installation](docs/images/fedora.png)
+
+
+## Ubuntu Linux
+
+Testing in progress.
+
+Installation validation coming soon.
+
+![Ubuntu Installation](docs/images/ubuntu.png)
 
 ---
 
@@ -24,9 +85,9 @@ It records audio on your computer and transcribes it entirely offline using **wh
 - Simple command-line interface
 - High-quality transcription
 
-Celvo is designed to transcribe audio as accurately as possible.
+Celvo is designed for transcription quality, privacy and reliability.
 
-It does **not** summarize, rewrite, or interpret conversations.
+It does not summarize, rewrite, or interpret conversations.
 
 ---
 
@@ -44,7 +105,7 @@ Nothing is uploaded to external servers.
 
 No internet connection is required after installation.
 
-An internet connection is only required during the initial installation to download dependencies and the transcription model.
+Internet is only required during the first installation to download dependencies and the transcription model.
 
 ---
 
@@ -71,79 +132,6 @@ Celvo requires:
 - A C++ compiler
 - Standard Linux development tools
 
-The installer automatically installs the required dependencies whenever possible.
-
----
-
-# Supported systems
-
-**Tested on Fedora Linux.**
-
-It should work on other major Linux distributions, but they have not yet been fully validated.
-
-Planned testing includes:
-
-- Ubuntu
-- Debian
-- Arch Linux
-
----
-
-# Installation
-
-## Copy and paste this into your terminal
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/thiagoburg/celvo/main/install.sh | bash
-```
-
-## What the installer does
-
-The installer automatically:
-
-- Detects your Linux distribution.
-- Installs required system packages.
-- Creates a Python virtual environment.
-- Installs Python dependencies.
-- Installs the Celvo Python package.
-- Downloads and builds `whisper.cpp`.
-- Downloads the Whisper Large-v3 quantized model.
-- Creates the Celvo commands.
-
-The first installation takes several minutes because it compiles `whisper.cpp` and downloads approximately **1 GB** of model files.
-
----
-
-# Available commands
-
-After installation, these commands are available:
-
-```bash
-record
-```
-
-Starts a new audio recording.
-
-```bash
-process
-```
-
-Processes the recorded audio and generates the transcription.
-
----
-
-# Project goals
-
-Celvo aims to provide a professional local transcription workflow that is:
-
-- Private
-- Offline
-- Reliable
-- Easy to install
-- Easy to use
-
-The primary goal is **transcription quality**, not AI-assisted content generation.
-
 ---
 
 # Technology
@@ -162,7 +150,7 @@ Celvo is built with:
 
 # Roadmap
 
-Upcoming improvements include:
+Upcoming improvements:
 
 - More robust installer
 - Better error messages
@@ -179,11 +167,10 @@ Current version: **v1.1.2**
 
 The installation process has been validated on Fedora Linux.
 
-Support for additional Linux distributions is currently being tested.
+Ubuntu and additional Linux distributions are currently being tested.
 
 ---
 
 # License
 
 MIT License
-

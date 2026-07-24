@@ -29,31 +29,10 @@ run() {
     if ! "$@" >>"$LOG_FILE" 2>&1; then
         echo
         echo "✗ Installation failed."
-        echo
-        echo "See log:"
-        echo "  $LOG_FILE"
-        echo
-        echo "Last log lines:"
-        tail -20 "$LOG_FILE"
+        echo "Check $LOG_FILE"
         exit 1
     fi
 }
-
-echo
-echo "================================"
-echo " Installing Celvo v$INSTALLER_VERSION"
-echo "================================"
-echo
-
-if [ "$EUID" -eq 0 ]; then
-    echo "Error: Do not run this installer as root."
-    exit 1
-fi
-
-if ! command -v sudo >/dev/null 2>&1; then
-    echo "Error: sudo is required."
-    exit 1
-fi
 
 
 step "Detecting system..."
@@ -76,8 +55,6 @@ if command -v dnf >/dev/null 2>&1; then
         ffmpeg \
         portaudio-devel
 
-    ok
-
 elif command -v apt >/dev/null 2>&1; then
 
     info "✓ Debian/Ubuntu detected"
@@ -92,12 +69,9 @@ elif command -v apt >/dev/null 2>&1; then
         curl \
         wget \
         cmake \
-        g++ \
-        make \
+        build-essential \
         ffmpeg \
         portaudio19-dev
-
-    ok
 
 elif command -v pacman >/dev/null 2>&1; then
 
@@ -106,17 +80,13 @@ elif command -v pacman >/dev/null 2>&1; then
     run sudo pacman -Sy --noconfirm \
         python \
         python-pip \
-        python-virtualenv \
         git \
         curl \
         wget \
         cmake \
-        gcc \
-        make \
+        base-devel \
         ffmpeg \
         portaudio
-
-    ok
 
 elif command -v zypper >/dev/null 2>&1; then
 
@@ -125,7 +95,6 @@ elif command -v zypper >/dev/null 2>&1; then
     run sudo zypper install -y \
         python3 \
         python3-pip \
-        python3-devel \
         git \
         curl \
         wget \
@@ -135,30 +104,21 @@ elif command -v zypper >/dev/null 2>&1; then
         ffmpeg \
         portaudio-devel
 
-    ok
-
 else
 
     echo "Unsupported Linux distribution."
-    echo
-    echo "Supported:"
-    echo "- Fedora"
-    echo "- Ubuntu"
-    echo "- Debian"
-    echo "- Arch Linux"
-    echo "- openSUSE"
-
     exit 1
 
 fi
+
+ok
 
 
 step "Checking Python..."
 
-if ! command -v python3 >/dev/null 2>&1; then
-    echo "Error: Python 3 was not installed."
-    exit 1
-fi
+command -v python3 >/dev/null 2>&1 || exit 1
+
+ok
 
 
 step "Creating Python environment..."
@@ -170,13 +130,10 @@ fi
 ok
 
 
-source "$VENV_DIR/bin/activate"
-
-
 step "Installing Python packages..."
 
-run python -m pip install --upgrade pip
-run pip install -r "$PROJECT_DIR/requirements.txt"
+run "$VENV_DIR/bin/python" -m pip install --upgrade pip
+run "$VENV_DIR/bin/pip" install -r "$PROJECT_DIR/requirements.txt"
 
 ok
 
@@ -187,50 +144,43 @@ run "$VENV_DIR/bin/pip" install .
 
 ok
 
+
 step "Installing whisper.cpp..."
 
+WHISPER_DIR="$PROJECT_DIR/whisper.cpp"
 
-if [ ! -d "$PROJECT_DIR/whisper.cpp" ]; then
+if [ ! -d "$WHISPER_DIR" ]; then
 
     run git clone \
-    https://github.com/ggml-org/whisper.cpp.git \
-    "$PROJECT_DIR/whisper.cpp"
+        https://github.com/ggerganov/whisper.cpp.git \
+        "$WHISPER_DIR"
 
 fi
 
+cd "$WHISPER_DIR"
 
-cd "$PROJECT_DIR/whisper.cpp"
-
-
-if [ ! -d "build" ]; then
-
-    run cmake -B build
-
-fi
-
-
+run cmake -B build
 run cmake --build build -j"$(nproc)"
+
+cd "$PROJECT_DIR"
 
 ok
 
 
 step "Downloading Whisper model..."
 
-
 MODEL_DIR="$PROJECT_DIR/models"
 MODEL="$MODEL_DIR/ggml-large-v3-q5_0.bin"
 
-
 mkdir -p "$MODEL_DIR"
-
 
 if [ ! -f "$MODEL" ]; then
 
-    echo "Downloading large-v3 Whisper model (~1GB)"
+    info "Downloading large-v3 Whisper model (~1GB)"
 
     run wget \
-    -O "$MODEL" \
-    https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin
+        -O "$MODEL" \
+        https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin
 
 else
 
@@ -243,39 +193,27 @@ ok
 
 step "Creating commands..."
 
-
 mkdir -p "$BIN_DIR"
 
 
-cat > "$BIN_DIR/record" <<WRAPPER
+cat > "$BIN_DIR/record" <<EOF
 #!/usr/bin/env bash
-
 cd "$PROJECT_DIR"
-
 "$VENV_DIR/bin/python" -m celvo record
-WRAPPER
+EOF
 
 
-cat > "$BIN_DIR/process" <<WRAPPER
+cat > "$BIN_DIR/process" <<EOF
 #!/usr/bin/env bash
-
 cd "$PROJECT_DIR"
-
 "$VENV_DIR/bin/python" -m celvo process
-WRAPPER
+EOF
 
 
 chmod +x "$BIN_DIR/record"
 chmod +x "$BIN_DIR/process"
 
 ok
-
-
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
-
-fi
 
 
 step "Verifying installation..."
@@ -286,21 +224,9 @@ ok
 
 
 echo
-echo "────────────────────────────────"
-echo
 echo "✓ Celvo installed successfully."
 echo
 echo "Commands:"
 echo
 echo "  record"
 echo "  process"
-echo
-echo "User files:"
-echo
-echo "  ~/Documents/celvo/audio"
-echo "  ~/Documents/celvo/transcription"
-echo
-echo "Installation log:"
-echo "  $LOG_FILE"
-echo
-echo "Restart your terminal if commands are not found."

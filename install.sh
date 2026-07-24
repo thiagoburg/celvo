@@ -4,35 +4,35 @@ set -e
 
 REPO="https://github.com/thiagoburg/celvo.git"
 DIR="$HOME/.local/share/celvo"
-
 VERSION="1.1.2"
 
 echo
 echo "==> Installing Celvo v$VERSION"
 echo
 
-
 if [ ! -d "$DIR" ]; then
-
-    mkdir -p "$HOME/.local/share"
 
     echo "==> Downloading Celvo..."
 
-    git clone -q "$REPO" "$DIR" >/dev/null 2>&1
+    mkdir -p "$HOME/.local/share"
+
+    git clone -q "$REPO" "$DIR"
 
     echo "✓ Done"
 
 else
 
+    echo "==> Updating Celvo..."
+
     cd "$DIR"
 
-    git pull -q >/dev/null 2>&1
+    git pull -q
+
+    echo "✓ Done"
 
 fi
 
-
 cd "$DIR"
-
 
 chmod +x setup.sh
 

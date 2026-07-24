@@ -1,175 +1,187 @@
 # Celvo
 
-![Python](https://img.shields.io/badge/python-3.x-blue)
-![Platform](https://img.shields.io/badge/platform-Linux-green)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
-![CI](https://github.com/thiagoburg/celvo/actions/workflows/python.yml/badge.svg)
+Private, offline audio recording and transcription for Linux.
 
+Built on `whisper.cpp` for high-quality local transcription.
 
-Private offline speech transcription tool.
+**Celvo** is a local audio recording and transcription tool focused on **privacy, simplicity, and transcription quality**.
 
-Celvo records audio and converts it into accurate text using local AI models.
-All processing happens on the user's machine, without cloud services or external accounts.
+It records audio on your computer and transcribes it entirely offline using **whisper.cpp** and OpenAI's Whisper models. Your recordings never leave your machine.
 
-## Overview
+---
 
-Most transcription services require uploading audio to external servers.
-
-Celvo provides a local alternative focused on:
-
-- Privacy
-- Transcription quality
-- Simple workflow
-- No dependency on cloud APIs
-
-## Features
+# Features
 
 - Local audio recording
-- Offline transcription
-- Whisper large-v3 model support
-- Linux native workflow
-- No external API keys required
-- Open source components
+- Offline AI transcription
+- Powered by `whisper.cpp`
+- Whisper Large-v3 quantized model
+- No cloud services
+- No API keys
+- No subscriptions
+- Simple command-line interface
+- High-quality transcription
 
-## How it works
+Celvo is designed to transcribe audio as accurately as possible.
 
-Audio recording
-        |
-        v
-Audio processing
-        |
-        v
-Whisper large-v3
-        |
-        v
-Text transcription
+It does **not** summarize, rewrite, or interpret conversations.
 
-## Requirements
+---
 
-- Linux operating system
-- Microphone or system audio source
-- Internet connection for the initial installation
+# Privacy
 
-The installer automatically installs required system dependencies, including Python.
+Everything runs locally.
 
-## Installation
+Your audio is:
 
-Clone the repository:
+- recorded locally
+- processed locally
+- transcribed locally
 
-    git clone https://github.com/thiagoburg/celvo.git
-    cd celvo
+Nothing is uploaded to external servers.
 
-Run the installer:
+No internet connection is required after installation.
 
-    ./install.sh
+An internet connection is only required during the initial installation to download dependencies and the transcription model.
 
-The installer will:
+---
 
-- Install required dependencies
-- Build whisper.cpp
-- Download the transcription model
-- Configure the command line interface
+# How it works
 
-## Usage
+Celvo follows a simple workflow:
 
-Record audio:
+1. Record audio.
+2. Save the recording locally.
+3. Run Whisper locally using `whisper.cpp`.
+4. Generate a text transcription.
 
-    record
+The transcription is produced entirely on your own computer.
 
-Process the recording:
+---
 
-    process
+# Requirements
 
-## Example
+Celvo requires:
 
-Input:
+- Python 3
+- Git
+- CMake
+- A C++ compiler
+- Standard Linux development tools
 
-    recording_001.wav
+The installer automatically installs the required dependencies whenever possible.
 
-Output:
+---
 
-    recording_001.txt
+# Supported systems
 
-## Architecture
+**Tested on Fedora Linux.**
 
-Celvo uses a local processing pipeline designed around privacy and simplicity.
+It should work on other major Linux distributions, but they have not yet been fully validated.
 
-The workflow is:
+Planned testing includes:
 
-    Audio sources
-        |
-        +----------------+
-        |                |
-        v                v
-    Microphone      System audio
-        |                |
-        +----------------+
-                 |
-                 v
-          Audio recording
-                 |
-                 v
-             WAV file
-                 |
-                 v
-           whisper.cpp
-                 |
-                 v
-      Whisper large-v3 model
-                 |
-                 v
-        Text transcription
+- Ubuntu
+- Debian
+- Arch Linux
 
+---
 
-The entire process runs locally on the user's machine.
-Audio files are not uploaded to external services.
+# Installation
 
-## Technology
+## Copy and paste this into your terminal
 
-Celvo is built using:
+```bash
+curl -fsSL https://raw.githubusercontent.com/thiagoburg/celvo/main/install.sh | bash
+```
+
+## What the installer does
+
+The installer automatically:
+
+- Detects your Linux distribution.
+- Installs required system packages.
+- Creates a Python virtual environment.
+- Installs Python dependencies.
+- Installs the Celvo Python package.
+- Downloads and builds `whisper.cpp`.
+- Downloads the Whisper Large-v3 quantized model.
+- Creates the Celvo commands.
+
+The first installation takes several minutes because it compiles `whisper.cpp` and downloads approximately **1 GB** of model files.
+
+---
+
+# Available commands
+
+After installation, these commands are available:
+
+```bash
+record
+```
+
+Starts a new audio recording.
+
+```bash
+process
+```
+
+Processes the recorded audio and generates the transcription.
+
+---
+
+# Project goals
+
+Celvo aims to provide a professional local transcription workflow that is:
+
+- Private
+- Offline
+- Reliable
+- Easy to install
+- Easy to use
+
+The primary goal is **transcription quality**, not AI-assisted content generation.
+
+---
+
+# Technology
+
+Celvo is built with:
 
 - Python
-- C++
 - whisper.cpp
-- Whisper large-v3
-- Linux audio tools
+- Whisper Large-v3
+- sounddevice
+- numpy
+- scipy
+- requests
 
-## Project Structure
+---
 
-    celvo/
-    ├── core/
-    │   ├── recorder.py
-    │   ├── processor.py
-    │   ├── whisper.py
-    │   ├── microphone.py
-    │   ├── system_audio.py
-    │   ├── mixer.py
-    │   ├── files.py
-    │   └── config.py
-    │
-    ├── main.py
-    ├── __main__.py
-    ├── models/
-    ├── data/
-    └── install.sh
+# Roadmap
 
-## Roadmap
+Upcoming improvements include:
 
-Possible future improvements:
+- More robust installer
+- Better error messages
+- Automatic tests
+- Improved documentation
+- Additional Linux validation
+- Stable release
 
-- Real-time transcription
-- Desktop application
-- Improved audio processing
-- Automatic language detection
+---
 
-## About
+# Project status
 
-Celvo is a software project focused on building practical offline AI applications using open source technologies.
+Current version: **v1.1.0**
 
-Author:
+The installation process has been validated on Fedora Linux.
 
-Thiago Burg
+Support for additional Linux distributions is currently being tested.
 
-## Demo
+---
 
-![Celvo demo](docs/images/demo.png)
+# License
+
+MIT License
+

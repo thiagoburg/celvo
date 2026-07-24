@@ -124,7 +124,8 @@ EOF2
 chmod +x "$BIN_DIR/record" "$BIN_DIR/process"
 
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$HOME/.bashrc"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+    export PATH="$HOME/.local/bin:$PATH"
 fi
 
 run "$VENV_DIR/bin/python" -c "import celvo"

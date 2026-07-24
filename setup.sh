@@ -52,7 +52,8 @@ elif command -v apt-get >/dev/null 2>&1; then
         cmake \
         build-essential \
         ffmpeg \
-        portaudio19-dev
+        portaudio19-dev \
+        pulseaudio-utils
 
 elif command -v pacman >/dev/null 2>&1; then
     run sudo pacman -Sy --noconfirm \
@@ -80,6 +81,12 @@ elif command -v zypper >/dev/null 2>&1; then
         portaudio-devel
 else
     echo "Unsupported Linux distribution."
+    exit 1
+fi
+
+if ! command -v pactl >/dev/null 2>&1; then
+    echo "Error: pactl is required for system audio capture."
+    echo "On Ubuntu, install pulseaudio-utils."
     exit 1
 fi
 

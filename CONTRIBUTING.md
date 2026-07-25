@@ -1,8 +1,10 @@
 # Contributing
 
-## Reporting issues
+Contributions are welcome.
 
-If you find a bug or have a suggestion, please open an issue including:
+## Issues
+
+If you find a bug or have a suggestion, please open an issue with:
 
 - A clear description of the problem
 - Steps to reproduce it
@@ -13,11 +15,15 @@ If you find a bug or have a suggestion, please open an issue including:
 
 Clone the repository:
 
-    git clone https://github.com/thiagoburg/celvo.git
+```bash
+git clone https://github.com/thiagoburg/celvo.git
+```
 
-Install dependencies:
+Install Celvo locally:
 
-    ./install.sh
+```bash
+./install.sh
+```
 
 ## Pull requests
 
@@ -26,9 +32,10 @@ Before submitting a pull request:
 - Keep changes focused
 - Explain the purpose of the change
 - Test the application locally
+- Mention any relevant Linux distribution details
 
 ## Code style
 
-Celvo follows simple and readable Python practices.
+Celvo follows simple, readable Python practices.
 
-Contributions that improve reliability, performance, or usability are welcome.
+Small improvements to reliability, usability, and clarity are always welcome.

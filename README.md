@@ -1,5 +1,13 @@
 # Celvo
 
+![Linux](https://img.shields.io/badge/Linux-supported-black?logo=linux)
+![Fedora](https://img.shields.io/badge/Fedora-validated-294172?logo=fedora&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-validated-E95420?logo=ubuntu&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![C++](https://img.shields.io/badge/C%2B%2B-whisper.cpp-00599C?logo=c%2B%2B&logoColor=white)
+![License](https://img.shields.io/github/license/thiagoburg/celvo)
+![Release](https://img.shields.io/github/v/release/thiagoburg/celvo)
+
 Private, offline audio recording and transcription tool for Linux.
 
 Built on `whisper.cpp` for high-quality local transcription.
@@ -29,9 +37,9 @@ The installer automatically:
 - Downloads the Whisper large-v3 model
 - Creates the `record` and `process` commands
 
-The first installation takes several minutes because it compiles `whisper.cpp` and downloads the transcription model.
+The first installation takes a few minutes because it compiles `whisper.cpp` and downloads the transcription model.
 
-After installation:
+After installation, the commands are available immediately:
 
 ```bash
 record
@@ -46,6 +54,21 @@ process
 ```
 
 Generate your transcription.
+
+> **Ubuntu minimal / fresh installations**
+>
+> If `curl` is not installed:
+>
+> ```bash
+> sudo apt update
+> sudo apt install -y curl
+> ```
+>
+> Then run:
+>
+> ```bash
+> curl -fsSL https://raw.githubusercontent.com/thiagoburg/celvo/main/install.sh | bash
+> ```
 
 ---
 
@@ -77,6 +100,7 @@ Planned validation includes:
 - EndeavourOS
 - elementary OS
 - Zorin OS
+- Other mainstream Linux distributions
 
 ---
 
@@ -104,9 +128,9 @@ Everything runs locally.
 
 Your audio is:
 
-- Recorded locally
-- Processed locally
-- Transcribed locally
+- recorded locally
+- processed locally
+- transcribed locally
 
 Nothing is uploaded to external servers.
 
@@ -133,11 +157,12 @@ Everything happens on your own computer.
 
 Celvo requires:
 
-- Python 3
-- Git
-- CMake
-- A C++ compiler
-- Standard Linux development tools
+- Supported Linux distribution
+- `sudo`
+- Internet connection for the first installation only
+- At least 3 GB of free disk space during installation
+
+All required packages are installed automatically.
 
 ---
 
@@ -152,6 +177,52 @@ Celvo is built with:
 - numpy
 - scipy
 - requests
+- ffmpeg
+
+---
+
+# Architecture
+
+Celvo follows a simple local-first architecture:
+
+```text
+Microphone/System Audio
+        │
+        ▼
+Audio Recorder
+        │
+        ▼
+Local WAV file
+        │
+        ▼
+whisper.cpp
+        │
+        ▼
+Text transcription
+```
+
+Everything runs entirely on your own machine.
+
+---
+
+# Project structure
+
+```text
+celvo/
+├── celvo/
+├── docs/
+│   └── images/
+├── .github/
+├── install.sh
+├── setup.sh
+├── requirements.txt
+├── pyproject.toml
+├── README.md
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+└── LICENSE
+```
 
 ---
 
@@ -159,7 +230,11 @@ Celvo is built with:
 
 Upcoming improvements:
 
-- Additional Linux validation
+- Debian validation
+- Linux Mint validation
+- Pop!_OS validation
+- Arch Linux validation
+- openSUSE validation
 - Better documentation
 - More automated testing
 - Performance improvements
@@ -169,11 +244,25 @@ Upcoming improvements:
 
 # Project status
 
-Current version: **v1.2.1**
+Current version: **v1.2.2**
 
 Validated on clean Fedora and Ubuntu installations.
 
 Support for additional mainstream Linux distributions is planned.
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+See `CONTRIBUTING.md`.
+
+---
+
+# Issues
+
+Found a bug? Please open a GitHub Issue.
 
 ---
 

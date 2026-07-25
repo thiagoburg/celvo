@@ -6,9 +6,11 @@ If you discover a security vulnerability in Celvo, please report it privately in
 
 Include:
 
-- Description of the vulnerability
+- A description of the vulnerability
 - Steps to reproduce it
-- Possible impact
-- Relevant logs or information
+- The possible impact
+- Relevant logs or screenshots
+
+Security reports are reviewed as quickly as possible.
 
 Thank you for helping improve Celvo.

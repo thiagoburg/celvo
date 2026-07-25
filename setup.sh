@@ -10,6 +10,15 @@ TMP_BIN_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_BIN_DIR"' EXIT
 rm -f "$LOG_FILE"
 
+AVAILABLE_MB="$(df -Pm / | awk 'NR==2 {print $4}')"
+if [ "${AVAILABLE_MB:-0}" -lt 3000 ]; then
+    echo
+    echo "Error: Not enough free disk space."
+    echo "Celvo needs at least 3 GB free on / during installation."
+    echo "See $LOG_FILE"
+    exit 1
+fi
+
 run() {
     if ! "$@" >>"$LOG_FILE" 2>&1; then
         echo
@@ -85,6 +94,7 @@ else
 fi
 
 if ! command -v pactl >/dev/null 2>&1; then
+    echo
     echo "Error: pactl is required for system audio capture."
     echo "On Ubuntu, install pulseaudio-utils."
     exit 1
@@ -115,6 +125,8 @@ if [ ! -f "$MODEL" ]; then
     run wget -O "$MODEL" https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin
 fi
 
+rm -f "$HOME/.local/bin/record" "$HOME/.local/bin/process"
+
 cat > "$TMP_BIN_DIR/record" <<EOF2
 #!/usr/bin/env bash
 cd "$PROJECT_DIR"
@@ -132,10 +144,11 @@ run sudo install -m 755 "$TMP_BIN_DIR/process" /usr/local/bin/process
 
 run "$VENV_DIR/bin/python" -c "import celvo"
 
-echo
-echo "✓ Celvo installed successfully."
-echo
-echo "Commands:"
-echo
-echo "  record"
-echo "  process"
+cat <<EOF
+✓ Celvo installed successfully.
+
+Commands:
+
+  record
+  process
+EOF

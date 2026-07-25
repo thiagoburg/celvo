@@ -1,7 +1,5 @@
 # Celvo
 
-![Celvo Demo](docs/images/demo.png)
-
 Private, offline audio recording and transcription tool for Linux.
 
 Built on `whisper.cpp` for high-quality local transcription.
@@ -24,12 +22,14 @@ curl -fsSL https://raw.githubusercontent.com/thiagoburg/celvo/main/install.sh | 
 
 The installer automatically:
 
-✓ Detects your Linux distribution  
-✓ Installs required dependencies  
-✓ Creates the Python environment  
-✓ Builds whisper.cpp  
-✓ Downloads the Whisper model  
-✓ Creates the Celvo commands  
+- Detects your Linux distribution
+- Installs required dependencies
+- Creates the Python environment
+- Builds `whisper.cpp`
+- Downloads the Whisper large-v3 model
+- Creates the `record` and `process` commands
+
+The first installation takes several minutes because it compiles `whisper.cpp` and downloads the transcription model.
 
 After installation:
 
@@ -37,7 +37,9 @@ After installation:
 record
 ```
 
-Record your audio, then:
+Record your audio.
+
+Then:
 
 ```bash
 process
@@ -51,25 +53,30 @@ Generate your transcription.
 
 ## Fedora Linux
 
-Tested on:
+Validated from a clean Fedora installation.
 
-- Fedora Linux
-- Python 3.14
-- whisper.cpp
-- Whisper Large-v3 quantized model
-
-Installation validated successfully.
-
-![Fedora Installation](docs/images/fedora.png)
-
+![Fedora installation](docs/images/fedora.png)
 
 ## Ubuntu Linux
 
-Testing in progress.
+Validated from a clean Ubuntu installation.
 
-Installation validation coming soon.
+![Ubuntu installation](docs/images/ubuntu.png)
 
-![Ubuntu Installation](docs/images/ubuntu.png)
+---
+
+# Future systems
+
+Planned validation includes:
+
+- Debian
+- Linux Mint
+- Pop!_OS
+- Arch Linux
+- openSUSE
+- EndeavourOS
+- elementary OS
+- Zorin OS
 
 ---
 
@@ -97,15 +104,15 @@ Everything runs locally.
 
 Your audio is:
 
-- recorded locally
-- processed locally
-- transcribed locally
+- Recorded locally
+- Processed locally
+- Transcribed locally
 
 Nothing is uploaded to external servers.
 
 No internet connection is required after installation.
 
-Internet is only required during the first installation to download dependencies and the transcription model.
+Internet access is only required during the initial installation to download dependencies and the transcription model.
 
 ---
 
@@ -115,10 +122,10 @@ Celvo follows a simple workflow:
 
 1. Record audio.
 2. Save the recording locally.
-3. Run Whisper locally using `whisper.cpp`.
+3. Process the recording with `whisper.cpp`.
 4. Generate a text transcription.
 
-The transcription is produced entirely on your own computer.
+Everything happens on your own computer.
 
 ---
 
@@ -139,7 +146,7 @@ Celvo requires:
 Celvo is built with:
 
 - Python
-- whisper.cpp
+- `whisper.cpp`
 - Whisper Large-v3
 - sounddevice
 - numpy
@@ -152,22 +159,21 @@ Celvo is built with:
 
 Upcoming improvements:
 
-- More robust installer
-- Better error messages
-- Automatic tests
-- Improved documentation
 - Additional Linux validation
-- Stable release
+- Better documentation
+- More automated testing
+- Performance improvements
+- Stable v1.x releases
 
 ---
 
 # Project status
 
-Current version: **v1.1.2**
+Current version: **v1.2.1**
 
-The installation process has been validated on Fedora Linux.
+Validated on clean Fedora and Ubuntu installations.
 
-Ubuntu and additional Linux distributions are currently being tested.
+Support for additional mainstream Linux distributions is planned.
 
 ---
 

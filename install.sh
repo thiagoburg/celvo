@@ -4,7 +4,7 @@ set -euo pipefail
 
 ARCHIVE_URL="https://codeload.github.com/thiagoburg/celvo/tar.gz/refs/heads/main"
 DIR="$HOME/.local/share/celvo"
-VERSION="1.1.2"
+VERSION="1.2.1"
 
 echo
 echo "==> Installing Celvo v$VERSION"

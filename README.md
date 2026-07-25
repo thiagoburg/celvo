@@ -55,7 +55,7 @@ process
 
 Generate your transcription.
 
-> **Ubuntu minimal / fresh installations**
+> **Fresh installations**
 >
 > If `curl` is not installed:
 >

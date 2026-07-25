@@ -100,7 +100,7 @@ Planned validation includes:
 - EndeavourOS
 - elementary OS
 - Zorin OS
-- Other mainstream Linux distributions
+- Other Linux distributions
 
 ---
 

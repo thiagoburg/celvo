@@ -337,3 +337,34 @@ def test_transcription_ready_uses_windows_system_sound(monkeypatch, tmp_path):
     ui_app.notify_transcription_ready(FakeRoot(), tmp_path / "ready.txt")
 
     assert sounds == [0x40]
+
+
+def test_close_no_keeps_celvo_running(monkeypatch):
+    app = ui_app.CelvoWindow.__new__(ui_app.CelvoWindow)
+    app.root = type("Root", (), {"destroy": lambda _self: pytest.fail("window should stay open")})()
+    app._closing = False
+    app._recording_active = app._transcribing = True
+    monkeypatch.setattr(ui_app.messagebox, "askyesno", lambda *a, **k: False)
+    monkeypatch.setattr(ui_app.os, "_exit", lambda _code: pytest.fail("Celvo should keep running"))
+
+    app.close()
+
+    assert not app._closing
+
+
+def test_close_yes_terminates_active_work_and_exits(monkeypatch):
+    app = ui_app.CelvoWindow.__new__(ui_app.CelvoWindow)
+    calls = []
+    app.root = type("Root", (), {"destroy": lambda _self: calls.append("destroy")})()
+    app._closing = False
+    app._recording_active = app._transcribing = True
+    app.recording = type("Recording", (), {"stop": lambda _self: calls.append("stop_recording")})()
+    app.transcription = type(
+        "Transcription", (), {"cancel": lambda _self: calls.append("cancel_transcription")}
+    )()
+    monkeypatch.setattr(ui_app.messagebox, "askyesno", lambda *a, **k: True)
+    monkeypatch.setattr(ui_app.os, "_exit", lambda code: calls.append(("exit", code)))
+
+    app.close()
+
+    assert calls == ["stop_recording", "cancel_transcription", "destroy", ("exit", 0)]

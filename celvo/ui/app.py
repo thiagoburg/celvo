@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 import tkinter as tk
 from pathlib import Path
@@ -302,21 +303,22 @@ class CelvoWindow:
     def close(self) -> None:
         if self._closing:
             return
-        if self._recording_active or self._transcribing:
-            if not messagebox.askyesno(
-                "Celvo is busy",
-                "Stop recording and cancel any active transcription before closing Celvo?",
-                parent=self.root,
-            ):
-                return
-            self._closing = True
-            if self._recording_active:
-                self.stop_recording()
-            if self._transcribing:
-                self.transcription.cancel()
-            self.status_var.set("Stopping active work before closing…")
+        if not messagebox.askyesno(
+            "Exit Celvo?",
+            "Are you sure you want to exit?",
+            parent=self.root,
+        ):
             return
+        self._closing = True
+        if self._recording_active:
+            self.recording.stop()
+        if self._transcribing:
+            self.transcription.cancel()
         self.root.destroy()
+        # Native inference can be unresponsive to cooperative shutdown. Once the
+        # child has been terminated, exit like Task Manager's End task so no
+        # orphaned worker can keep Celvo running in the background.
+        os._exit(0)
 
     def _show_error(self, title: str, error: object) -> None:
         messagebox.showerror(title, str(error), parent=self.root)

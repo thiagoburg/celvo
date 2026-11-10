@@ -393,8 +393,17 @@ def test_transcription_completion_event_triggers_notification(monkeypatch, tmp_p
     notified = []
     app._transcribing = True
     app._closing = False
+    app._recording_active = True
     app.root = object()
+    app.recording = type("Recording", (), {"running": False})()
     app.status_var = type("Status", (), {"set": lambda _self, _value: None})()
+    button_states = []
+    app.record_button = type(
+        "Button", (), {"configure": lambda _self, **kwargs: button_states.append(kwargs["state"])}
+    )()
+    app.stop_button = type(
+        "Button", (), {"configure": lambda _self, **kwargs: button_states.append(kwargs["state"])}
+    )()
     app.refresh_library = lambda: None
     app._selection_changed = lambda: None
     monkeypatch.setattr(ui_app, "notify_transcription_ready", lambda root, path: notified.append(path))
@@ -402,6 +411,8 @@ def test_transcription_completion_event_triggers_notification(monkeypatch, tmp_p
     app._handle_event(ui_app.UiEvent("transcription_finished", transcript))
 
     assert not app._transcribing
+    assert not app._recording_active
+    assert button_states == ["normal", "disabled"]
     assert notified == [transcript]
 
 

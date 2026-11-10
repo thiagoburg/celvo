@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import threading
@@ -13,6 +14,8 @@ from ..core.recorder import format_time
 from .controller import RecordingController, TranscriptionController, UiEvent
 from .library import RecordingEntry, delete_recording, list_recordings, open_local_path, rename_recording
 from .theme import apply_theme, apply_windows_dark_titlebar
+
+logger = logging.getLogger(__name__)
 
 
 class CelvoWindow:
@@ -261,9 +264,19 @@ class CelvoWindow:
         self.delete_button.configure(state="normal" if selected else "disabled")
 
     def _poll_events(self) -> None:
-        for event in self.recording.drain_events() + self.transcription.drain_events():
-            self._handle_event(event)
-        self.root.after(100, self._poll_events)
+        try:
+            for event in self.recording.drain_events() + self.transcription.drain_events():
+                try:
+                    self._handle_event(event)
+                except Exception as exc:
+                    logger.exception("Celvo UI failed while handling %s", event.kind)
+                    self.status_var.set(f"UI update failed: {exc}")
+        finally:
+            try:
+                if self.root.winfo_exists():
+                    self.root.after(100, self._poll_events)
+            except tk.TclError:
+                pass
 
     def _handle_event(self, event: UiEvent) -> None:
         if event.kind == "recording_progress":
@@ -286,9 +299,19 @@ class CelvoWindow:
             self.status_var.set(str(event.payload))
         elif event.kind == "transcription_finished":
             self._transcribing = False
+            if self._recording_active and not self.recording.running:
+                self._recording_active = False
             self.status_var.set(f"Transcript saved: {event.payload}")
+            self.record_button.configure(state="disabled" if self._recording_active else "normal")
+            if not self._recording_active:
+                self.stop_button.configure(state="disabled")
             self.refresh_library()
-            notify_transcription_ready(self.root, Path(event.payload))
+            self._selection_changed()
+            try:
+                notify_transcription_ready(self.root, Path(event.payload))
+            except Exception as exc:
+                logger.exception("Could not show transcription completion notification")
+                self.status_var.set(f"Transcript saved: {event.payload} (notification failed: {exc})")
         elif event.kind == "transcription_failed":
             self._transcribing = False
             self.status_var.set(f"Transcription failed: {event.payload}")

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+import threading
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, simpledialog, ttk
@@ -330,20 +331,58 @@ def _format_duration(seconds: float | None) -> str:
 
 def notify_transcription_ready(root: tk.Tk, transcript: Path) -> None:
     """Notify the user audibly and visually when local transcription completes."""
+    _play_completion_sound(root)
     try:
-        if sys.platform == "win32":
-            import winsound
+        if root.state() == "iconic":
+            root.deiconify()
+        toast = tk.Toplevel(root)
+        toast.title("Transcription ready")
+        toast.transient(root)
+        toast.configure(background="#202124")
+        toast.resizable(False, False)
+        toast.attributes("-topmost", True)
+        body = ttk.Frame(toast, padding=16)
+        body.pack(fill="both", expand=True)
+        ttk.Label(body, text="Transcription ready", font=("TkDefaultFont", 11, "bold")).pack(
+            anchor="w"
+        )
+        ttk.Label(body, text=f"Saved as {transcript.name}\n{transcript.parent}", wraplength=420).pack(
+            anchor="w", pady=(6, 12)
+        )
+        ttk.Button(body, text="Open transcript", command=lambda: open_local_path(transcript)).pack(
+            anchor="e"
+        )
+        toast.update_idletasks()
+        x = max(0, root.winfo_rootx() + root.winfo_width() - toast.winfo_width() - 24)
+        y = max(0, root.winfo_rooty() + root.winfo_height() - toast.winfo_height() - 48)
+        toast.geometry(f"+{x}+{y}")
+        toast.after(15000, lambda: toast.destroy() if toast.winfo_exists() else None)
+        toast.lift()
+    except tk.TclError:
+        # Preserve feedback in the main window if the transient notification fails.
+        try:
+            root.title(f"Celvo — Transcription ready: {transcript.name}")
+        except tk.TclError:
+            pass
 
-            winsound.MessageBeep(winsound.MB_ICONINFORMATION)
-        else:
-            root.bell()
-    except (ImportError, RuntimeError, tk.TclError):
+
+def _play_completion_sound(root: tk.Tk) -> None:
+    if sys.platform == "win32":
+        def play_tone() -> None:
+            try:
+                import winsound
+
+                winsound.Beep(880, 220)
+                winsound.Beep(1175, 320)
+            except (ImportError, RuntimeError):
+                pass
+
+        threading.Thread(target=play_tone, name="celvo-notification-sound", daemon=True).start()
+        return
+    try:
+        root.bell()
+    except (RuntimeError, tk.TclError):
         pass
-    messagebox.showinfo(
-        "Transcription ready",
-        f"Your transcript is ready:\n{transcript}",
-        parent=root,
-    )
 
 
 def launch_ui() -> None:

@@ -302,41 +302,107 @@ def test_ui_is_dark_only_and_has_no_refresh_controls():
     assert 'text="Refresh"' not in source
 
 
+class _FakeNotificationWidget:
+    def __init__(self, *_args, **_kwargs):
+        self.after_ms = None
+
+    def __getattr__(self, _name):
+        return lambda *_args, **_kwargs: None
+
+    def winfo_width(self):
+        return 300
+
+    def winfo_height(self):
+        return 100
+
+    def winfo_exists(self):
+        return True
+
+    def after(self, delay, _callback):
+        self.after_ms = delay
+
+
+class _FakeNotificationRoot:
+    def __init__(self):
+        self.bells = 0
+
+    def bell(self):
+        self.bells += 1
+
+    def state(self):
+        return "normal"
+
+    def winfo_rootx(self):
+        return 50
+
+    def winfo_rooty(self):
+        return 50
+
+    def winfo_width(self):
+        return 850
+
+    def winfo_height(self):
+        return 620
+
+
+def _mock_notification_ui(monkeypatch):
+    toast = _FakeNotificationWidget()
+    monkeypatch.setattr(ui_app.tk, "Toplevel", lambda *_args, **_kwargs: toast)
+    monkeypatch.setattr(ui_app.ttk, "Frame", _FakeNotificationWidget)
+    monkeypatch.setattr(ui_app.ttk, "Label", _FakeNotificationWidget)
+    monkeypatch.setattr(ui_app.ttk, "Button", _FakeNotificationWidget)
+    return toast
+
+
 def test_transcription_ready_notification_is_visual_and_audible(monkeypatch, tmp_path):
-    class FakeRoot:
-        def __init__(self):
-            self.bells = 0
-
-        def bell(self):
-            self.bells += 1
-
-    root = FakeRoot()
-    shown = []
+    root = _FakeNotificationRoot()
+    toast = _mock_notification_ui(monkeypatch)
     monkeypatch.setattr(ui_app.sys, "platform", "linux")
-    monkeypatch.setattr(ui_app.messagebox, "showinfo", lambda *args, **kwargs: shown.append((args, kwargs)))
 
     ui_app.notify_transcription_ready(root, tmp_path / "ready.txt")
 
     assert root.bells == 1
-    assert shown and shown[0][0][0] == "Transcription ready"
+    assert toast.after_ms == 15000
 
 
-def test_transcription_ready_uses_windows_system_sound(monkeypatch, tmp_path):
-    class FakeRoot:
-        def bell(self):
-            raise AssertionError("Windows should use winsound, not the Tk bell")
-
-    sounds = []
+def test_transcription_ready_uses_direct_windows_tones(monkeypatch, tmp_path):
+    _mock_notification_ui(monkeypatch)
+    tones = []
     winsound = ModuleType("winsound")
-    winsound.MB_ICONINFORMATION = 0x40
-    winsound.MessageBeep = lambda sound: sounds.append(sound)
+    winsound.Beep = lambda frequency, duration: tones.append((frequency, duration))
     monkeypatch.setattr(ui_app.sys, "platform", "win32")
     monkeypatch.setitem(sys.modules, "winsound", winsound)
-    monkeypatch.setattr(ui_app.messagebox, "showinfo", lambda *args, **kwargs: None)
 
-    ui_app.notify_transcription_ready(FakeRoot(), tmp_path / "ready.txt")
+    class ImmediateThread:
+        def __init__(self, *, target, **_kwargs):
+            self.target = target
 
-    assert sounds == [0x40]
+        def start(self):
+            self.target()
+
+    monkeypatch.setattr(ui_app.threading, "Thread", ImmediateThread)
+
+    ui_app.notify_transcription_ready(_FakeNotificationRoot(), tmp_path / "ready.txt")
+
+    assert tones == [(880, 220), (1175, 320)]
+
+
+def test_transcription_completion_event_triggers_notification(monkeypatch, tmp_path):
+    app = ui_app.CelvoWindow.__new__(ui_app.CelvoWindow)
+    transcript = tmp_path / "ready.txt"
+    notified = []
+    app._transcribing = True
+    app._closing = False
+    app.root = object()
+    app.status_var = type("Status", (), {"set": lambda _self, _value: None})()
+    app.refresh_library = lambda: None
+    app._selection_changed = lambda: None
+    monkeypatch.setattr(ui_app, "notify_transcription_ready", lambda root, path: notified.append(path))
+
+    app._handle_event(ui_app.UiEvent("transcription_finished", transcript))
+
+    assert not app._transcribing
+    assert notified == [transcript]
 
 
 def test_close_no_keeps_celvo_running(monkeypatch):

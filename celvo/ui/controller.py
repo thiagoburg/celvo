@@ -11,6 +11,7 @@ from typing import Any
 
 from ..core.processor import process_audio
 from ..core.recorder import record_audio
+from ..core.whisper import terminate_active_transcriptions
 
 
 @dataclass(frozen=True)
@@ -108,9 +109,10 @@ class TranscriptionController:
         self._thread.start()
 
     def cancel(self) -> None:
-        """Ask the active Whisper process to stop promptly."""
+        """Cancel the worker and terminate Whisper immediately if it is running."""
         if self._cancel is not None:
             self._cancel.set()
+        terminate_active_transcriptions()
 
     def drain_events(self) -> list[UiEvent]:
         events: list[UiEvent] = []

@@ -11,6 +11,23 @@ from pathlib import Path
 
 from .config import OUTPUT_DIR, THREADS, WHISPER_CLI, WHISPER_LANGUAGE, WHISPER_MODEL
 
+_active_process_lock = threading.Lock()
+_active_processes: set[subprocess.Popen] = set()
+
+
+def terminate_active_transcriptions() -> None:
+    """Immediately stop active whisper-cli processes, safe to call from the UI thread."""
+    with _active_process_lock:
+        processes = tuple(_active_processes)
+    for process in processes:
+        if process.poll() is None:
+            try:
+                # terminate() maps to TerminateProcess on Windows, so an inference
+                # that is busy inside native code cannot hold the UI open.
+                process.terminate()
+            except OSError:
+                pass
+
 
 class TranscriptionCancelled(RuntimeError):
     """Raised when the user closes Celvo during transcription."""
@@ -67,6 +84,8 @@ def transcribe_audio(
     process = None
     try:
         process = subprocess.Popen(command, **run_options)
+        with _active_process_lock:
+            _active_processes.add(process)
         while True:
             try:
                 stdout, stderr = process.communicate(timeout=0.1)
@@ -86,6 +105,10 @@ def transcribe_audio(
     except OSError as exc:
         temporary_text.unlink(missing_ok=True)
         raise RuntimeError(f"Could not start whisper.cpp: {exc}") from exc
+    finally:
+        if process is not None:
+            with _active_process_lock:
+                _active_processes.discard(process)
     if process.returncode:
         temporary_text.unlink(missing_ok=True)
         detail = (stderr or stdout or "").strip()

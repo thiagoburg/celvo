@@ -305,7 +305,7 @@ class CelvoWindow:
         if self._recording_active or self._transcribing:
             if not messagebox.askyesno(
                 "Celvo is busy",
-                "Stop the recording and wait for active work to finish before closing Celvo?",
+                "Stop recording and cancel any active transcription before closing Celvo?",
                 parent=self.root,
             ):
                 return

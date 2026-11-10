@@ -153,3 +153,19 @@ def test_transcription_cancellation_terminates_whisper_and_keeps_no_partial_tran
         whisper.transcribe_audio(audio, cancel_event=cancel)
     assert terminated == ["terminate"]
     assert not list((tmp_path / "transcription").glob("*.partial.txt"))
+
+
+def test_terminate_active_transcriptions_stops_live_process(monkeypatch):
+    calls = []
+
+    class FakeProcess:
+        def poll(self):
+            return None
+
+        def terminate(self):
+            calls.append("terminate")
+
+    process = FakeProcess()
+    monkeypatch.setattr(whisper, "_active_processes", {process})
+    whisper.terminate_active_transcriptions()
+    assert calls == ["terminate"]

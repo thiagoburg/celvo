@@ -1,0 +1,79 @@
+name: Windows whisper.cpp runtime
+
+on:
+  push:
+    branches: [main, windows11-production-ready]
+    tags: ['celvo-v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows-runtime:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout whisper.cpp v1.9.5
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/whisper.cpp
+          ref: v1.9.5
+          path: whisper.cpp
+      - name: Configure and build Release CLI
+        run: |
+          $actual = (git -C whisper.cpp rev-parse HEAD).Trim()
+          if ($actual -ne 'd1be6fde11ac6e0407606b4e42fe72d34add8037') { throw "Unexpected whisper.cpp revision: $actual" }
+          cmake -S whisper.cpp -B whisper.cpp/build -DWHISPER_BUILD_TESTS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+          cmake --build whisper.cpp/build --config Release --target whisper-cli --parallel
+      - name: Verify executable and package runtime DLLs
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem whisper.cpp/build -Filter whisper-cli.exe -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'whisper-cli.exe was not produced' }
+          & $exe.FullName --help
+          if ($LASTEXITCODE -ne 0) { throw 'whisper-cli.exe --help failed' }
+          & $exe.FullName --version
+          if ($LASTEXITCODE -ne 0) { throw 'whisper-cli.exe --version failed' }
+          New-Item -ItemType Directory -Force runtime | Out-Null
+          Copy-Item $exe.FullName runtime/
+          Get-ChildItem whisper.cpp/build -Filter *.dll -Recurse | ForEach-Object {
+            Copy-Item $_.FullName runtime/ -Force
+          }
+          $files = Get-ChildItem runtime -File
+          if (-not ($files | Where-Object Name -eq 'whisper-cli.exe')) { throw 'Runtime package is incomplete' }
+          Push-Location runtime
+          try {
+            .\whisper-cli.exe --help
+            if ($LASTEXITCODE -ne 0) { throw 'Packaged whisper-cli.exe --help failed' }
+            .\whisper-cli.exe --version
+            if ($LASTEXITCODE -ne 0) { throw 'Packaged whisper-cli.exe --version failed' }
+          } finally { Pop-Location }
+          Compress-Archive -Path runtime/* -DestinationPath whisper-windows-x64.zip -Force
+          $hash = (Get-FileHash whisper-windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  whisper-windows-x64.zip" | Set-Content whisper-windows-x64.zip.sha256 -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whisper-windows-x64
+          path: |
+            whisper-windows-x64.zip
+            whisper-windows-x64.zip.sha256
+          if-no-files-found: error
+  publish-runtime:
+    if: startsWith(github.ref, 'refs/tags/celvo-v')
+    needs: build-windows-runtime
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: whisper-windows-x64
+          path: runtime
+      - name: Attach runtime to Celvo version release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            runtime/whisper-windows-x64.zip
+            runtime/whisper-windows-x64.zip.sha256

@@ -36,9 +36,7 @@ def get_next_id():
 
 
 def get_latest_audio():
-    files = list(
-        AUDIO_DIR.glob("recording_*.wav")
-    )
+    files = list(AUDIO_DIR.glob("recording_*.wav"))
 
     if not files:
         return None

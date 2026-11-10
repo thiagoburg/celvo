@@ -1,32 +1,12 @@
-import subprocess
+"""Compatibility wrapper for the platform system audio backend."""
+
 from pathlib import Path
+from threading import Event
 
-from .audio import find_system_monitor
+from .audio import get_audio_backend
 
 
-def record_system_audio(output: Path, stop_event):
-    monitor = find_system_monitor()
-
-    if not monitor:
-        raise RuntimeError("System audio monitor not found")
-
-    command = [
-        "parec",
-        "--device",
-        monitor,
-        "--format=s16le",
-        "--rate=48000",
-        "--channels=2",
-    ]
-
-    with output.open("wb") as file:
-        process = subprocess.Popen(
-            command,
-            stdout=file,
-        )
-
-        while not stop_event.is_set():
-            stop_event.wait(0.1)
-
-        process.terminate()
-        process.wait()
+def record_system_audio(output: Path, stop_event: Event):
+    start = Event()
+    start.set()
+    return get_audio_backend().capture_system_audio(output, stop_event, Event(), start)

@@ -4,7 +4,14 @@ __pycache__/
 
 # Virtual environments
 venv/
+.venv/
 .env
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+/work/whisper-bin-x64.zip
+/work/whisper-runtime-check/
 
 # Audio recordings
 data/audio/*.wav

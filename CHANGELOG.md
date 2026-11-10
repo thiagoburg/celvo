@@ -4,6 +4,20 @@ All notable changes to Celvo are documented here.
 
 ---
 
+## v1.3.0 (unreleased)
+
+### Added
+
+- Platform-specific Windows WASAPI and Linux PulseAudio audio backends
+- Synchronized, bounded-memory recording and chunked WAV mixing
+- Cross-platform CLI, paths, Whisper discovery, and Windows installer
+- Hardware-free test suite and Windows/Linux CI
+
+### Improved
+
+- Recording errors are propagated and failed captures are preserved as partials
+- Whisper failures and missing outputs are reported instead of treated as success
+
 ## v1.2.2
 
 ### Improved
